@@ -7,16 +7,21 @@ import 'package:reminder/reminder01/screen/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  print("Initializing DB...");
   await DbHelper.initDb();
-  await NotificationHelper.initilizeNotification();
-  // Initialize notifications
-  // await NotificationService.initialize();
+  print("DB initialized.");
 
-  // Request notification permission
+  print("Initializing Notifications...");
+  await NotificationHelper.initilizeNotification();
+  print("Notifications initialized.");
+
+  print("Requesting notification permission...");
   await Permission.notification.request();
+  print("Permission requested.");
 
   runApp(MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

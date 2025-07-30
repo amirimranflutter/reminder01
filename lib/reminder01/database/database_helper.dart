@@ -9,13 +9,13 @@ class DbHelper{
         join(dbPath, 'reminderS.db'),
         onCreate: (db, version) async {
           await db.execute('''
-        CREATE TABLE reminderS(
+        CREATE TABLE reminders(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           title TEXT,
           description TEXT,
           isActive INTEGER,
           remindersTime TEXT,
-          category TEXT,
+          category TEXT
         )
             ''');
         },

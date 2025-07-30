@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:reminder/reminder01/database/database_helper.dart';
 import 'package:reminder/reminder01/notification/notification_helper.dart';
 import 'package:reminder/reminder01/screen/editreminderScreen.dart';
+import 'package:reminder/reminder01/screen/remider%20_detail.dart';
 
 class Home_Screen extends StatefulWidget {
   const Home_Screen({super.key});
@@ -61,75 +62,111 @@ class _Home_ScreenState extends State<Home_Screen> {
         ),
         body: _reminder.isEmpty
             ? Center(
-          child: Text(
-            "No Reminder Found",
-            style: TextStyle(fontSize: 18, color: Colors.teal),
-          ),
-        )
-            : ListView.builder(
-          itemCount: _reminder.length,
-          itemBuilder: (context, index) {
-            final reminder = _reminder[index];
-            return Dismissible(
-              key: Key(reminder['id'].toString()),
-              child: Card(
-                color: Colors.teal,
-                elevation: 6,
-                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)
+                child: Text(
+                  "No Reminder Found",
+                  style: TextStyle(fontSize: 18, color: Colors.teal),
                 ),
-                child: ListTile(
+              )
+            : ListView.builder(
+                itemCount: _reminder.length,
+                itemBuilder: (context, index) {
+                  final reminder = _reminder[index];
+                  return Dismissible(
+                    key: Key(reminder['id'].toString()),
+                    child: Card(
+                      color: Colors.teal,
+                      elevation: 6,
+                      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: ListTile(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>ReminderDetailScreen(reminderId: reminder['id'])));
+                        },
+                        title: Text(
+                          reminder['title'],
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        subtitle: Text(
+                          "Category  :${reminder['category']}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                            color: Colors.black,
+                          ),
+                        ),
+                        trailing: Switch(
+                          value: reminder['isActive'] == 1,
+                          onChanged: (value) {
+                            _toggleReminder(reminder['id'], value);
+                          },
+                        ),
+                      ),
+                    ),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.redAccent,
 
-                ),),
-              direction: DismissDirection.endToStart,
-              background: Container(color: Colors.redAccent,
-
-                padding: EdgeInsets.only(right: 20),
-                alignment: Alignment.centerRight,
-                child: Icon(Icons.delete, color: Colors.white, size: 30,),
+                      padding: EdgeInsets.only(right: 20),
+                      alignment: Alignment.centerRight,
+                      child: Icon(Icons.delete, color: Colors.white, size: 30),
+                    ),
+                    confirmDismiss: (direction) async {
+                      // return await _showDeleteConfirmationDialog(context);
+                    },
+                    onDismissed: (direction) {
+                      _deleteReminder(reminder['id']);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Reminder is deleted")),
+                      );
+                    },
+                  );
+                },
               ),
-              confirmDismiss: (direction) async {
-                // return await _showDeleteConfirmationDialog(context);
-              },
-              onDismissed: (direction) {
-                _deleteReminder(reminder['id']);
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Reminder is deleted")));
-              },
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddEditReminderScreen()),
             );
           },
-        ),
-        floatingActionButton: FloatingActionButton(onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>AddEditReminderScreen()));
-        },
-            child: Icon(Icons.add),
-            backgroundColor: Colors.teal,
-            foregroundColor: Colors.white,
-
+          child: Icon(Icons.add),
+          backgroundColor: Colors.teal,
+          foregroundColor: Colors.white,
         ),
       ),
     );
   }
-Future<bool?> _showDeleteConfirmationDialog(BuildContext context){
-    return showDialog(context: context, builder: (BuildContext content){
-      return AlertDialog(
-        backgroundColor: Colors.white,
-        title: Text('Delete Reminder'),
-        content: Text('Are you sure you want to delete this reminder?'),
-      actions: [
-        TextButton(onPressed: (){
-          Navigator.of(context).pop(false);
-      }, child: Text("cancel"),
 
-        ),
-        TextButton(onPressed: (){
-          Navigator.of(context).pop(true);
-        }, child: Text("delete",style: TextStyle(color: Colors.redAccent ),),
-
-        )],
-      );
-    });
-}
-
+  Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext content) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text('Delete Reminder'),
+          content: Text('Are you sure you want to delete this reminder?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text("cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text("delete", style: TextStyle(color: Colors.redAccent)),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
