@@ -23,9 +23,24 @@ void main() async {
 }
 
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    // NotificationHelper.showNotification(
+    //   // title: message.notification?.title ?? 'Notification',
+    //   // body: message.notification?.body ?? '',
+    // );
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
