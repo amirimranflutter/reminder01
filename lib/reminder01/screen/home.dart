@@ -41,6 +41,7 @@ class _Home_ScreenState extends State<Home_Screen> {
       NotificationHelper.cancelNotification(id);
     }
     _loadReminder();
+    setState(() {});
   }
 
   Future<void> _deleteReminder(int id) async {
@@ -81,8 +82,15 @@ class _Home_ScreenState extends State<Home_Screen> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: ListTile(
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>ReminderDetailScreen(reminderId: reminder['id'])));
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ReminderDetailScreen(
+                                reminderId: reminder['id'],
+                              ),
+                            ),
+                          );
                         },
                         title: Text(
                           reminder['title'],
@@ -104,7 +112,10 @@ class _Home_ScreenState extends State<Home_Screen> {
                           value: reminder['isActive'] == 1,
                           onChanged: (value) {
                             _toggleReminder(reminder['id'], value);
-                          },
+                          setState(() {
+
+                          });
+                            },
                         ),
                       ),
                     ),

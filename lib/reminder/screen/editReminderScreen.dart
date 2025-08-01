@@ -54,12 +54,12 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.title),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "Please enter a description";
+                    }
+                    return null;
                   }
-                  return null;
-                },
               ),
               SizedBox(height: 16),
               TextFormField(
@@ -70,12 +70,12 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
                   prefixIcon: Icon(Icons.description),
                 ),
                 maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "Please enter a description";
+                    }
+                    return null;
                   }
-                  return null;
-                },
               ),
               SizedBox(height: 16),
               ListTile(

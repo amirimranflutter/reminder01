@@ -58,7 +58,10 @@ class _AddEditReminderScreenState extends State<AddEditReminderScreen> {
                       border: InputBorder.none,
                     ),
                     validator: (value) {
-                      value!.isEmpty ? "Please enter a title" : null;
+                      if (value == null || value.trim().isEmpty) {
+                        return "Please enter a title"; // or "description"
+                      }
+                      return null;
                     },
                   ),
                 ),
@@ -103,24 +106,38 @@ class _AddEditReminderScreenState extends State<AddEditReminderScreen> {
                   label: 'Date',
                   icon: Icons.calendar_today,
                   displayValue: DateFormat('yyyy-MM-dd').format(_reminderTime),
-                  onPressed: _selectDate,
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    _selectDate();
+                  },
                 ),
                 SizedBox(height: 20),
                 _buildDateTimerPicker(
                   label: 'Time',
                   icon: Icons.access_time,
                   displayValue: DateFormat('hh:mm:a').format(_reminderTime),
-                  onPressed: _selectTime,
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    _selectTime();
+                  },
                 ),
-                SizedBox(height: 20,),
+                SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 15,horizontal: 20),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 15,
+                        horizontal: 20,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       backgroundColor: Colors.teal,
                       foregroundColor: Colors.white,
-                      textStyle: TextStyle(fontSize: 14,fontWeight: FontWeight.bold)
+                      textStyle: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     onPressed: _saveReminder,
                     child: Text('Save Reminder'),
@@ -179,7 +196,7 @@ class _AddEditReminderScreenState extends State<AddEditReminderScreen> {
     required String label,
     required IconData icon,
     required String displayValue,
-    required Function() onPressed,
+    required VoidCallback onPressed,
   }) {
     return Card(
       elevation: 6,
@@ -189,7 +206,7 @@ class _AddEditReminderScreenState extends State<AddEditReminderScreen> {
         leading: Icon(icon, color: Colors.teal),
         title: Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
         trailing: TextButton(
-          onPressed: () {},
+          onPressed: onPressed,
           child: Text(displayValue, style: TextStyle(color: Colors.teal)),
         ),
       ),
@@ -237,31 +254,146 @@ class _AddEditReminderScreenState extends State<AddEditReminderScreen> {
     }
   }
 
+  // Future<void> _saveReminder() async {
+  //   if (_formKey.currentState!.validate()) {
+  //     final newReminder = {
+  //       'title': _titleController.text,
+  //       'description': _descriptionController.text,
+  //       'isActive': 1,
+  //       'reminderTime': _reminderTime.toIso8601String(),
+  //       'category': _category,
+  //     };
+  //     if (_reminderTime == null) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Please select reminder time')),
+  //       );
+  //       return;
+  //     }
+  //     if (widget.reminderId == null) {
+  //       final reminderId = await DbHelper.addReminder(newReminder);
+  //       NotificationHelper.scheduleNotification(
+  //         reminderId,
+  //         _titleController.text,
+  //         _category,
+  //         _reminderTime,
+  //       );
+  //     } else {
+  //       await NotificationHelper.scheduleNotification(
+  //         widget.reminderId!,
+  //         _titleController.text,
+  //         _category,
+  //         _reminderTime,
+  //       );
+  //     }
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => Home_Screen()),
+  //     );
+  //   }
+  // }
+
+
+
+  // Future<void> _saveReminder() async {
+  //   if (_formKey.currentState!.validate()) {
+  //     final newReminder = {
+  //       'title': _titleController.text,
+  //       'description': _descriptionController.text,
+  //       'isActive': 1,
+  //       'reminderTime': _reminderTime.toIso8601String(),
+  //       'category': _category,
+  //     };
+  //
+  //     if (_reminderTime == null) {
+  //       // ❌ This condition is unnecessary
+  //       ScaffoldMessenger.of(
+  //         context,
+  //       ).showSnackBar(SnackBar(content: Text('Please select reminder time')));
+  //       return;
+  //     }
+  //
+  //     if (widget.reminderId == null) {
+  //       final reminderId = await DbHelper.addReminder(newReminder);
+  //       print('remider id ====>$reminderId');
+  //       print('new reinder  ====>$newReminder');
+  //       NotificationHelper.scheduleNotification(
+  //         reminderId,
+  //         _titleController.text,
+  //         _category,
+  //         _reminderTime,
+  //       );
+  //     } else {
+  //       await NotificationHelper.scheduleNotification(
+  //         widget.reminderId!,
+  //         _titleController.text,
+  //         _category,
+  //         _reminderTime,
+  //       );
+  //     }
+  //
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => Home_Screen()),
+  //     );
+  //   }
+  // }
   Future<void> _saveReminder() async {
     if (_formKey.currentState!.validate()) {
-      final newReminder = {
+      // Check if isActive column exists before including it
+      final newReminder = <String, dynamic>{
         'title': _titleController.text,
         'description': _descriptionController.text,
-        'isActive': 1,
         'reminderTime': _reminderTime.toIso8601String(),
         'category': _category,
       };
-      if (widget.reminderId == null) {
-        final reminderId = await DbHelper.addReminder(newReminder);
-        NotificationHelper.scheduleNotification(
-          reminderId,
-          _titleController.text,
-          _category,
-          _reminderTime,
-        );
-      } else {
-        await NotificationHelper.scheduleNotification(
-          widget.reminderId!,
-          _titleController.text,
-          _category,
-          _reminderTime,
-        );
+
+      // Try to add isActive column, but handle gracefully if it doesn't exist
+      try {
+        newReminder['isActive'] = 1;
+
+        if (widget.reminderId == null) {
+          final reminderId = await DbHelper.addReminder(newReminder);
+          print('reminder id ====>$reminderId');
+          print('new reminder ====>$newReminder');
+          NotificationHelper.scheduleNotification(
+            reminderId,
+            _titleController.text,
+            _category,
+            _reminderTime,
+          );
+        } else {
+          await DbHelper.updateReminder(widget.reminderId!, newReminder);
+          await NotificationHelper.scheduleNotification(
+            widget.reminderId!,
+            _titleController.text,
+            _category,
+            _reminderTime,
+          );
+        }
+      } catch (e) {
+        // If isActive column doesn't exist, try without it
+        print('Error with isActive column: $e');
+        newReminder.remove('isActive');
+
+        if (widget.reminderId == null) {
+          final reminderId = await DbHelper.addReminder(newReminder);
+          NotificationHelper.scheduleNotification(
+            reminderId,
+            _titleController.text,
+            _category,
+            _reminderTime,
+          );
+        } else {
+          await DbHelper.updateReminder(widget.reminderId!, newReminder);
+          await NotificationHelper.scheduleNotification(
+            widget.reminderId!,
+            _titleController.text,
+            _category,
+            _reminderTime,
+          );
+        }
       }
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Home_Screen()),

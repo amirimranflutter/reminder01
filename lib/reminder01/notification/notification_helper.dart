@@ -65,4 +65,23 @@ class NotificationHelper {
   static Future<void> cancelNotification(int id) async {
     await _notificationPlugin.cancel(id);
   }
+  static Future<void> showNotification({required String title, required String body}) async {
+    const androidDetails = AndroidNotificationDetails(
+      'reminder_channel',
+      'Reminders',
+      importance: Importance.high,
+      priority: Priority.high,
+      playSound: true,
+      icon: '@mipmap/ic_launcher',
+    );
+
+    final notificationDetails = NotificationDetails(android: androidDetails);
+
+    await _notificationPlugin.show(
+      0, // Notification ID
+      title,
+      body,
+      notificationDetails,
+    );
+  }
 }
