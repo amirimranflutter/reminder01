@@ -100,7 +100,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: _saveReminder,
+                  onPressed:()=> _saveReminder,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
